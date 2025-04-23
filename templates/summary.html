@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Submission Summary</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f4f4;
+            padding: 40px;
+            margin: 0;
+        }
+        .summary-box {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 900px;
+            margin: auto;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .field {
+            margin-bottom: 20px;
+        }
+        .field label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 6px;
+            color: #444;
+        }
+        .field p, .field ul {
+            background-color: #f0f0f0;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin: 0;
+        }
+        .field ul {
+            list-style: disc inside;
+        }
+        button {
+            display: block;
+            margin: 30px auto 0;
+            padding: 12px 28px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .image-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .preview-img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="summary-box" id="report">
+        <h2>Submitted Event Details</h2>
+
+        {% for key, value in data.form_data.items() %}
+            <div class="field">
+                <label>{{ key.replace("_", " ").title() }}</label>
+                {% if value is iterable and not value|string %}
+                    <ul>
+                        {% for item in value %}
+                            <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>{{ value }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        {% for file_key, files in data.file_fields.items() %}
+            <div class="field">
+                <label>{{ file_key.replace("_", " ").title() }}</label>
+                {% if files %}
+                    {% if files is string and files.endswith(('.jpg', '.png', '.jpeg')) %}
+                        <div class="image-grid">
+                            <img src="{{ url_for('static', filename='uploads/' + files) }}" class="preview-img">
+                        </div>
+                    {% elif files is string %}
+                        <p>{{ files }}</p>
+                    {% else %}
+                        <div class="image-grid">
+                            {% for file in files %}
+                                {% if file.endswith(('.jpg', '.png', '.jpeg')) %}
+                                    <img src="{{ url_for('static', filename='uploads/' + file) }}" class="preview-img">
+                                {% else %}
+                                    <p>{{ file }}</p>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <p>No file uploaded.</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <form action="/download_pdf" method="POST">
+        <input type="hidden" name="html_data" id="html_data">
+        <button type="submit" onclick="preparePDF()">Download as PDF</button>
+    </form>
+
+    <script>
+        function preparePDF() {
+            const report = document.getElementById('report');
+            document.getElementById('html_data').value = report.outerHTML;
+        }
+    </script>
+</body>
+</html>

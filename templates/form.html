@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Report Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            padding: 30px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        form {
+            background: #ffffff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 700px;
+            margin: auto;
+        }
+
+        input[type="text"], input[type="date"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        .file-input {
+            margin-bottom: 15px;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .checkbox-grid label {
+            font-weight: normal;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h2>Event Report Form</h2>
+    <form action="/submit" method="POST" enctype="multipart/form-data">
+        <!-- Text Inputs -->
+        <input type="text" name="event_title" placeholder="Event Title" required>
+        <input type="text" name="event_summary" placeholder="Event Summary">
+        <textarea name="event_objectives" placeholder="Objectives"></textarea>
+        <textarea name="event_activities" placeholder="Event Flow / Activities"></textarea>
+        <input type="text" name="event_venue" placeholder="Venue">
+        <input type="date" name="event_date">
+        <input type="text" name="event_department" placeholder="Department">
+        <input type="text" name="faculty_coordinator" placeholder="Faculty Coordinator">
+        <input type="text" name="student_coordinator" placeholder="Student Coordinator">
+        <input type="text" name="chief_guest" placeholder="Chief Guest">
+
+        <!-- Time Slot Selection -->
+        <label>Select Event Timings:</label>
+        <div class="checkbox-grid">
+            {% for hour in range(9, 17) %}
+                <label>
+                    <input type="checkbox" name="event_time" value="{{'%02d' % hour}}:00-{{'%02d' % hour}}:50">
+                    {{'%02d' % hour}}:00 - {{'%02d' % hour}}:50
+                </label>
+            {% endfor %}
+        </div>
+
+        <!-- File Inputs -->
+        <label>Poster:</label>
+        <input type="file" name="poster" class="file-input">
+
+        <label>Certificates (multiple):</label>
+        <input type="file" name="certificates" multiple class="file-input">
+
+        <label>Feedback Excel:</label>
+        <input type="file" name="feedback_excel" class="file-input">
+
+        <label>Participant List:</label>
+        <input type="file" name="participant_list" class="file-input">
+
+        <label>Presenter List:</label>
+        <input type="file" name="presenter_list" class="file-input">
+
+        <label>Winner List:</label>
+        <input type="file" name="winner_list" class="file-input">
+
+        <label>Event Photos (multiple):</label>
+        <input type="file" name="event_photos" multiple class="file-input">
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
