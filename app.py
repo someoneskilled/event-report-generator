@@ -1,8 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from werkzeug.utils import secure_filename
 import os
 import json
-import pdfkit
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
@@ -61,13 +60,6 @@ def submit():
     data = {"form_data": form_data, "file_fields": file_fields}
     
     return render_template("summary.html", data=data)
-
-@app.route('/download_pdf', methods=['POST'])
-def download_pdf():
-    data = request.form['html_data']
-    pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], "report.pdf")
-    pdfkit.from_string(data, pdf_path)
-    return send_file(pdf_path, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)

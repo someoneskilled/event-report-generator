@@ -5,23 +5,23 @@
     <title>Submission Summary</title>
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #e3f2fd, #ffffff);
             padding: 40px;
             margin: 0;
         }
         .summary-box {
-            background-color: #fff;
+            background-color: #ffffff;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
             max-width: 900px;
             margin: auto;
         }
         h2 {
             text-align: center;
             margin-bottom: 30px;
-            color: #333;
+            color: #0d47a1;
         }
         .field {
             margin-bottom: 20px;
@@ -30,31 +30,17 @@
             font-weight: bold;
             display: block;
             margin-bottom: 6px;
-            color: #444;
+            color: #1a237e;
         }
         .field p, .field ul {
-            background-color: #f0f0f0;
+            background-color: #f9fbfd;
             padding: 10px 14px;
-            border-radius: 6px;
+            border-radius: 8px;
             margin: 0;
+            border: 1.5px solid #90caf9;
         }
         .field ul {
             list-style: disc inside;
-        }
-        button {
-            display: block;
-            margin: 30px auto 0;
-            padding: 12px 28px;
-            font-size: 16px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-        button:hover {
-            background-color: #0056b3;
         }
         .image-grid {
             display: flex;
@@ -72,7 +58,7 @@
     </style>
 </head>
 <body>
-    <div class="summary-box" id="report">
+    <div class="summary-box">
         <h2>Submitted Event Details</h2>
 
         {% for key, value in data.form_data.items() %}
@@ -117,17 +103,5 @@
             </div>
         {% endfor %}
     </div>
-
-    <form action="/download_pdf" method="POST">
-        <input type="hidden" name="html_data" id="html_data">
-        <button type="submit" onclick="preparePDF()">Download as PDF</button>
-    </form>
-
-    <script>
-        function preparePDF() {
-            const report = document.getElementById('report');
-            document.getElementById('html_data').value = report.outerHTML;
-        }
-    </script>
 </body>
 </html>
