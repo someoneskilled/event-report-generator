@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Event Report Generator</title>
+    <title>RepGEN</title>
     <style>
-       body {
+        body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(to right, #e3f2fd, #ffffff);
             padding: 30px;
@@ -94,7 +95,7 @@
         }
 
         /* When checkbox is selected */
-        .checkbox-grid input[type="checkbox"]:checked + label {
+        .checkbox-grid input[type="checkbox"]:checked+label {
             background-color: #81c784 !important;
             color: white;
             border-color: #388e3c;
@@ -119,9 +120,9 @@
             background: linear-gradient(135deg, #1976d2, #1565c0);
             transform: scale(1.02);
         }
-
     </style>
 </head>
+
 <body>
     <h2>Event Report Form</h2>
     <form action="/submit" method="POST" enctype="multipart/form-data">
@@ -138,7 +139,7 @@
         <input type="text" name="chief_guest" placeholder="Chief Guest">
 
         <!-- Time Slot Selection -->
-        <label>Select Event Timings:</label>
+        <!-- <label>Select Event Timings:</label>
         <div class="checkbox-grid">
             {% for hour in range(9, 17) %}
                 <input type="checkbox" name="event_time" id="time{{'%02d' % hour}}" value="{{'%02d' % hour}}:00-{{'%02d' % hour}}:50">
@@ -146,7 +147,37 @@
                     {{'%02d' % hour}}:00 - {{'%02d' % hour}}:50
                 </label>
             {% endfor %}
+        </div> -->
+
+        <!-- Time Slot Selection -->
+        <label>Select Event Timings:</label>
+        <div class="checkbox-grid">
+            <input type="checkbox" name="event_time" id="time0900" value="09:00-09:50">
+            <label for="time0900">9:00 AM - 9:50 AM</label>
+
+            <input type="checkbox" name="event_time" id="time1000" value="10:00-10:50">
+            <label for="time1000">10:00 AM - 10:50 AM</label>
+
+            <input type="checkbox" name="event_time" id="time1100" value="11:00-11:50">
+            <label for="time1100">11:00 AM - 11:50 AM</label>
+
+            <input type="checkbox" name="event_time" id="time1200" value="12:00-12:50">
+            <label for="time1200">12:00 PM - 12:50 PM</label>
+
+            <input type="checkbox" name="event_time" id="time1300" value="13:00-13:50">
+            <label for="time1300">1:00 PM - 1:50 PM</label>
+
+            <input type="checkbox" name="event_time" id="time1400" value="14:00-14:50">
+            <label for="time1400">2:00 PM - 2:50 PM</label>
+
+            <input type="checkbox" name="event_time" id="time1500" value="15:00-15:50">
+            <label for="time1500">3:00 PM - 3:50 PM</label>
+
+            <input type="checkbox" name="event_time" id="time1600" value="16:00-16:50">
+            <label for="time1600">4:00 PM - 4:50 PM</label>
         </div>
+
+
 
         <!-- File Inputs -->
         <label>Poster:</label>
@@ -173,4 +204,5 @@
         <button type="submit">Submit</button>
     </form>
 </body>
+
 </html>

@@ -38,6 +38,8 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 def form():
     return render_template('form.html')
 
+
+
 @app.route('/submit', methods=['POST'])
 def submit():
     form_data = {}
@@ -70,6 +72,31 @@ def submit():
             form_data["event_activities"],
             "You are a professional event writer. Turn these rough notes into a polished description of the event activities or agenda in bulletin and Avoid giving any starting or intro."
         )
+
+    # Generate Event Outcome and SEO-Friendly Description
+    extra_input = f"""
+    Summary: {form_data["event_summary"]}
+    Objectives: {form_data["event_objectives"]}
+    Activities: {form_data["event_activities"]}
+    """
+    instruction_extra_fields = """
+    Based on the provided event summary, objectives, and activities:
+    1. Generate a short paragraph for 'Event Outcome' describing what the event achieved.
+    2. Generate a 1–2 line 'SEO-Friendly Short Description' for blog/social sharing use.
+    Format:
+    Event Outcome: <paragraph>
+    SEO Description: <line>
+    """
+    extra_response = generateAI(extra_input.strip(), instruction_extra_fields)
+
+    # Parse the response into outcome and SEO fields
+    try:
+        lines = extra_response.split("SEO Description:")
+        form_data["event_outcome"] = lines[0].replace("Event Outcome:", "").strip()
+        form_data["seo_description"] = lines[1].strip()
+    except Exception as e:
+        form_data["event_outcome"] = "Error generating event outcome."
+        form_data["seo_description"] = "Error generating SEO description."
 
     # Time slots (multiple)
     form_data['event_time'] = request.form.getlist('event_time')
@@ -105,7 +132,7 @@ def submit():
         file_fields[key] = paths
 
     data = {"form_data": form_data, "file_fields": file_fields}
-    
+
     return render_template("summary.html", data=data)
 
 if __name__ == '__main__':
