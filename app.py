@@ -43,7 +43,7 @@ def generate_image_caption(image_path):
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": "Give a short one liner tagline for the image of event"},
+                        {"type": "text", "text": "Give a short one liner tagline for the image of event, no need to give intro just give a few words caption telling whats in the image."},
                         {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{b64_image}"}}
                     ]
                 }
@@ -71,9 +71,9 @@ def submit():
     form_data = {}
 
     text_fields = [
-        "event_title", "web_url", "event_summary", "event_objectives", "event_activities",
+        "event_title", "web_url", "event_summary", "event_objectives", "event_feedback_bulletin",
         "event_venue", "event_date", "event_department",
-        "faculty_coordinator", "student_coordinator", "chief_guest", "guest_testim"
+        "faculty_coordinator", "chief_guest", "guest_testimonial"
     ]
 
     for field in text_fields:
@@ -82,7 +82,7 @@ def submit():
     if form_data["event_summary"]:
         form_data["event_summary"] = generateAI(
             form_data["event_summary"],
-            "You are a professional event summarizer. Convert rough notes into a clear, 150-word summary."
+            "You are a professional event summarizer. Convert rough notes into a clear, 150-word summary. Keep it professional, simple and ready for documentation."
         )
 
     if form_data["event_objectives"]:
@@ -91,21 +91,21 @@ def submit():
             "You are an academic writer. Convert these rough event objectives into a clear, professional bullet-point list. Avoid giving any starting or intro."
         )
 
-    if form_data["event_activities"]:
-        form_data["event_activities"] = generateAI(
-            form_data["event_activities"],
-            "You are a professional event writer. Turn these rough notes into a polished description of the event activities or agenda in bulletin and Avoid giving any starting or intro."
+    if form_data["event_feedback_bulletin"]:
+        form_data["event_feedback_bulletin"] = generateAI(
+            form_data["event_feedback_bulletin"],
+            "Turn these rough notes into a polished feedbacks of the event or agenda in bullet points. Avoid giving any starting or intro just give the bullet points."
         )
 
     extra_input = f"""
     Summary: {form_data["event_summary"]}
     Objectives: {form_data["event_objectives"]}
-    Activities: {form_data["event_activities"]}
+    Activities: {form_data["event_feedback_bulletin"]}
     """
     instruction_extra_fields = """
     Based on the provided event summary, objectives, and activities:
-    1. Generate a short paragraph for 'Event Outcome' describing what the event achieved.
-    2. Generate a 1–2 line 'SEO-Friendly Short Description' for blog/social sharing use.
+    1. Generate simple bullet points for 'Event Outcome' describing what the event achieved.
+    2. Generate a few lines 'SEO-Friendly Short Description' for blog/social sharing use.
     Format:
     Event Outcome: <paragraph>
     SEO Description: <line>
@@ -125,14 +125,10 @@ def submit():
     file_fields = {
         'poster': None,
         'certificates': [],
-        'feedback_excel': None,
-        'participant_list': None,
-        'presenter_list': None,
-        'winner_list': None,
         'event_photos': []
     }
 
-    for key in ['poster', 'feedback_excel', 'participant_list', 'presenter_list', 'winner_list']:
+    for key in ['poster']:
         file = request.files.get(key)
         if file and file.filename != '':
             filename = secure_filename(file.filename)
@@ -180,12 +176,12 @@ def download_docx():
     doc.add_heading('Event Summary Report', 0)
 
     basic_fields = [
+        ("Department", form_data.get("event_department", "")),
         ("Title", form_data.get("event_title", "")),
         ("Venue", form_data.get("event_venue", "")),
         ("Date", form_data.get("event_date", "")),
         ("Time(s)", ", ".join(form_data.get("event_time", []))),
         ("Faculty Coordinator", form_data.get("faculty_coordinator", "")),
-        ("Student Coordinator", form_data.get("student_coordinator", "")),
         ("Chief Guest", form_data.get("chief_guest", "")),
         ("Web Link", form_data.get("web_url", ""))
     ]
@@ -196,7 +192,7 @@ def download_docx():
     sections = {
         "Event Summary": form_data.get("event_summary", ""),
         "Objectives": form_data.get("event_objectives", ""),
-        "Event Activities": form_data.get("event_activities", ""),
+        "Event Feedback": form_data.get("event_feedback_bulletin", ""),
         "Event Outcome": form_data.get("event_outcome", ""),
         "SEO Description": form_data.get("seo_description", "")
     }

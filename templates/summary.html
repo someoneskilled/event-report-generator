@@ -97,7 +97,7 @@
 
         <h3>📌 General Information</h3>
         {% for key, value in data.form_data.items() %}
-        {% if key not in ['event_summary', 'event_objectives', 'event_activities', 'event_outcome', 'seo_description'] %}
+        {% if key not in ['event_summary', 'event_objectives', 'event_feedback_bulletin', 'event_outcome', 'seo_description'] %}
         <div class="field">
             <label>{{ key.replace("_", " ").title() }}</label>
 
@@ -130,7 +130,7 @@
         {% endfor %}
 
         <h3>📄 Generated Content</h3>
-        {% for key in ['event_summary', 'event_objectives', 'event_activities', 'event_outcome', 'seo_description'] %}
+        {% for key in ['event_summary', 'event_objectives', 'event_feedback_bulletin', 'event_outcome', 'seo_description'] %}
         {% if data.form_data.get(key) %}
         <div class="field">
             <label>{{ key.replace("_", " ").title() }}</label>
