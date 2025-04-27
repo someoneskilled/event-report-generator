@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request, session, send_file
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
@@ -170,6 +171,7 @@ def submit():
 
     return render_template('summary.html', data={"form_data": form_data, "file_fields": file_fields, "image_captions": image_captions})
 
+
 @app.route('/download-docx')
 def download_docx():
     form_data = session.get('form_data')
@@ -188,7 +190,7 @@ def download_docx():
         run.bold = True
         run.font.size = Pt(14)
         run.font.name = 'Times New Roman'
-        run.font.color.rgb = RGBColor(0, 0, 0)
+        run.font.color.rgb = RGBColor(0, 0, 0)  # Black
         p.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
 
     def add_content(text):
@@ -197,19 +199,19 @@ def download_docx():
         run.italic = True
         run.font.size = Pt(11)
         run.font.name = 'Times New Roman'
-        run.font.color.rgb = RGBColor(100, 100, 100)
+        run.font.color.rgb = RGBColor(128, 0, 0)  # Maroon
         p.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
 
-    def add_big_image(filename):
+    def add_big_image(filename, width_inches=5):
         try:
             path = os.path.join(app.root_path, 'static', 'uploads', filename)
             if os.path.exists(path):
-                doc.add_picture(path, width=Inches(5))
+                doc.add_picture(path, width=Inches(width_inches))
                 doc.paragraphs[-1].alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
             else:
-                add_content(f"[Poster not found: {filename}]")
+                add_content(f"[Image not found: {filename}]")
         except Exception:
-            add_content(f"[Error loading poster: {filename}]")
+            add_content(f"[Error loading image: {filename}]")
 
     def add_small_images_side_by_side(filenames):
         table = doc.add_table(rows=1, cols=len(filenames))
@@ -231,7 +233,9 @@ def download_docx():
                 cell.text = "[Image missing]"
 
     # === Document Content ===
-    doc.add_heading('Kristu Jayanti College (Autonomous)', 0)
+
+    # Add Logo at Top
+    add_big_image('logo.png', width_inches=5)
 
     ordered_fields = [
         ("Department", form_data.get("event_department")),
@@ -279,7 +283,7 @@ def download_docx():
                 non_empty_rows.append(row)
 
         if non_empty_rows:
-            # Find the maximum number of non-empty columns
+            # Find maximum non-empty columns
             max_cols = max(len([cell for cell in row if cell is not None and str(cell).strip() != '']) for row in non_empty_rows)
 
             add_heading("Participants / Winners / Presenters List")
@@ -292,7 +296,7 @@ def download_docx():
                 if idx < max_cols:
                     hdr_cells[idx].text = str(cell) if cell is not None else ''
 
-            # Rows
+            # Data Rows
             for row_data in non_empty_rows[1:]:
                 row_cells = table.add_row().cells
                 for idx, value in enumerate(row_data):
@@ -309,6 +313,7 @@ def download_docx():
         download_name="summary.docx",
         mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     )
+
 
 if __name__ == '__main__':
     app.run(debug=True)
