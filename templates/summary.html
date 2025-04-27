@@ -97,7 +97,8 @@
 
         <h3>📌 General Information</h3>
         {% for key, value in data.form_data.items() %}
-        {% if key not in ['event_summary', 'event_objectives', 'event_feedback_bulletin', 'event_outcome', 'seo_description'] %}
+        {% if key not in ['event_summary', 'event_objectives', 'event_feedback_bulletin', 'event_outcome',
+        'seo_description'] %}
         <div class="field">
             <label>{{ key.replace("_", " ").title() }}</label>
 
@@ -108,29 +109,29 @@
             {% set duration_hours = duration_minutes // 60 %}
             {% set duration_rem = duration_minutes % 60 %}
             {% macro to_ampm(t) %}
-                {% set hour = (t.split(":")[0] | int) %}
-                {% set minute = t.split(":")[1] %}
-                {{ hour % 12 if hour % 12 != 0 else 12 }}:{{ "%02d"|format(minute | int) }} {{ "AM" if hour < 12 else "PM" }}
-            {% endmacro %}
-            <p>{{ to_ampm(start) }} - {{ to_ampm(end) }} |
+            {% set hour = (t.split(":")[0] | int) %}
+            {% set minute = t.split(":")[1] %}
+            {{ hour % 12 if hour % 12 != 0 else 12 }}:{{ "%02d"|format(minute | int) }} {{ "AM" if hour < 12 else "PM"
+                }} {% endmacro %} <p>{{ to_ampm(start) }} - {{ to_ampm(end) }} |
                 {{ duration_hours }}h{% if duration_rem %} {{ duration_rem }}m{% endif %}
-            </p>
+                </p>
 
-            {% elif value is iterable and not value|string %}
-            <ul>
-                {% for item in value %}
-                <li>{{ item }}</li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p>{{ value }}</p>
-            {% endif %}
+                {% elif value is iterable and not value|string %}
+                <ul>
+                    {% for item in value %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>{{ value }}</p>
+                {% endif %}
         </div>
         {% endif %}
         {% endfor %}
 
         <h3>📄 Generated Content</h3>
-        {% for key in ['event_summary', 'event_objectives', 'event_feedback_bulletin', 'event_outcome', 'seo_description'] %}
+        {% for key in ['event_summary', 'event_objectives', 'event_feedback_bulletin', 'event_outcome',
+        'seo_description'] %}
         {% if data.form_data.get(key) %}
         <div class="field">
             <label>{{ key.replace("_", " ").title() }}</label>
@@ -175,12 +176,13 @@
     </div>
     <div style="text-align: center; margin-top: 40px;">
         <a href="{{ url_for('download_docx') }}" style="text-decoration: none;">
-            <button style="background-color: #0d47a1; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 16px; cursor: pointer;">
+            <button
+                style="background-color: #0d47a1; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 16px; cursor: pointer;">
                 Download as Docx
             </button>
         </a>
     </div>
-    
+
 </body>
 
 </html>

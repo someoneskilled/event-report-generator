@@ -128,7 +128,7 @@
     <form action="/submit" method="POST" enctype="multipart/form-data">
         <!-- Text Inputs -->
         <input type="text" name="event_title" placeholder="Event Title" required>
-        <input type="text" name="web_url" placeholder="Website URL" >
+        <input type="text" name="web_url" placeholder="Website URL">
         <input type="text" name="event_summary" placeholder="Event Summary">
         <textarea name="event_objectives" placeholder="Objectives"></textarea>
         <textarea name="event_feedback_bulletin" placeholder="Event Feedback"></textarea>
@@ -167,7 +167,11 @@
             <label for="time1600">4:30 PM - 5:00 PM</label>
         </div>
 
-
+        <!-- excel files -->
+        <div class="field">
+            <label>Upload Participants Excel</label>
+            <input type="file" name="event_excel" accept=".xls, .xlsx">
+        </div>
 
         <!-- File Inputs -->
         <label>Poster:</label>

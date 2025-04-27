@@ -8,6 +8,7 @@ from docx import Document
 from docx.shared import Pt, RGBColor, Inches
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from io import BytesIO
+from openpyxl import load_workbook
 
 # === Setup ===
 load_dotenv()
@@ -20,7 +21,6 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
 
 # === Utility Functions ===
 def generateAI(input_text, instruction):
@@ -62,12 +62,10 @@ def generate_image_caption(image_path):
     except Exception as e:
         return f"Caption Error: {str(e)}"
 
-
 # === Routes ===
 @app.route('/')
 def form():
     return render_template('form.html')
-
 
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -126,10 +124,11 @@ def submit():
     file_fields = {
         'poster': None,
         'certificates': [],
-        'event_photos': []
+        'event_photos': [],
+        'event_excel': None
     }
 
-    # Single poster
+    # Poster
     poster = request.files.get('poster')
     if poster and poster.filename != '':
         filename = secure_filename(poster.filename)
@@ -137,7 +136,7 @@ def submit():
         poster.save(path)
         file_fields['poster'] = filename
 
-    # Multiple files
+    # Certificates and Photos
     for field in ['certificates', 'event_photos']:
         uploaded_files = request.files.getlist(field)
         paths = []
@@ -149,6 +148,14 @@ def submit():
                 paths.append(filename)
         file_fields[field] = paths
 
+    # Event Excel
+    event_excel = request.files.get('event_excel')
+    if event_excel and event_excel.filename.endswith(('.xls', '.xlsx')):
+        excel_filename = secure_filename(event_excel.filename)
+        excel_path = os.path.join(app.config['UPLOAD_FOLDER'], excel_filename)
+        event_excel.save(excel_path)
+        file_fields['event_excel'] = excel_filename
+
     # Image captions
     image_captions = {}
     for photo_filename in file_fields['event_photos']:
@@ -159,10 +166,9 @@ def submit():
     # Save to session
     session['form_data'] = form_data
     session['image_captions'] = image_captions
-    session['file_fields'] = file_fields  # FIXED: important!!
+    session['file_fields'] = file_fields
 
     return render_template('summary.html', data={"form_data": form_data, "file_fields": file_fields, "image_captions": image_captions})
-
 
 @app.route('/download-docx')
 def download_docx():
@@ -175,7 +181,7 @@ def download_docx():
 
     doc = Document()
 
-    # Styling Utilities
+    # === Styling Utilities ===
     def add_heading(text):
         p = doc.add_paragraph()
         run = p.add_run(text)
@@ -224,7 +230,7 @@ def download_docx():
             else:
                 cell.text = "[Image missing]"
 
-    # Document content
+    # === Document Content ===
     doc.add_heading('Kristu Jayanti College (Autonomous)', 0)
 
     ordered_fields = [
@@ -244,17 +250,14 @@ def download_docx():
             add_heading(label)
             add_content(value)
 
-    # Add poster
     if file_fields.get('poster'):
         add_heading("Poster")
         add_big_image(file_fields['poster'])
 
-    # Add event photos
     if file_fields.get('event_photos'):
         add_heading("Event Photos")
         add_small_images_side_by_side(file_fields['event_photos'])
 
-    # Add certificates
     if file_fields.get('certificates'):
         add_heading("Certificates")
         for cert in file_fields['certificates']:
@@ -263,7 +266,40 @@ def download_docx():
                 doc.add_picture(path, width=Inches(3))
                 doc.paragraphs[-1].alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
-    # Save and send document
+    # === Insert Excel as Table (Optimized version) ===
+    if file_fields.get('event_excel'):
+        excel_path = os.path.join(app.root_path, 'static', 'uploads', file_fields['event_excel'])
+        wb = load_workbook(excel_path)
+        sheet = wb.active
+
+        # Collect only non-empty rows
+        non_empty_rows = []
+        for row in sheet.iter_rows(values_only=True):
+            if any(cell is not None and str(cell).strip() != '' for cell in row):
+                non_empty_rows.append(row)
+
+        if non_empty_rows:
+            # Find the maximum number of non-empty columns
+            max_cols = max(len([cell for cell in row if cell is not None and str(cell).strip() != '']) for row in non_empty_rows)
+
+            add_heading("Participants / Winners / Presenters List")
+            table = doc.add_table(rows=1, cols=max_cols)
+            table.style = 'Light List Accent 1'
+
+            # Header
+            hdr_cells = table.rows[0].cells
+            for idx, cell in enumerate(non_empty_rows[0]):
+                if idx < max_cols:
+                    hdr_cells[idx].text = str(cell) if cell is not None else ''
+
+            # Rows
+            for row_data in non_empty_rows[1:]:
+                row_cells = table.add_row().cells
+                for idx, value in enumerate(row_data):
+                    if idx < max_cols:
+                        row_cells[idx].text = str(value) if value is not None else ''
+
+    # === Save and Download ===
     buffer = BytesIO()
     doc.save(buffer)
     buffer.seek(0)
@@ -273,7 +309,6 @@ def download_docx():
         download_name="summary.docx",
         mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     )
-
 
 if __name__ == '__main__':
     app.run(debug=True)
