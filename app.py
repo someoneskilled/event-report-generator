@@ -286,7 +286,7 @@ def download_docx():
             # Find maximum non-empty columns
             max_cols = max(len([cell for cell in row if cell is not None and str(cell).strip() != '']) for row in non_empty_rows)
 
-            add_heading("Participants / Winners / Presenters List")
+            add_heading("Participants List")
             table = doc.add_table(rows=1, cols=max_cols)
             table.style = 'Light List Accent 1'
 
@@ -310,7 +310,7 @@ def download_docx():
     return send_file(
         buffer,
         as_attachment=True,
-        download_name="summary.docx",
+        download_name="eventreport.docx",
         mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     )
 

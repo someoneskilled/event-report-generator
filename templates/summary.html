@@ -88,14 +88,19 @@
             border-radius: 6px;
             border: 1px solid #bbdefb;
         }
+        footer {
+            text-align: center;
+            padding-top: 15px;
+
+        }
     </style>
 </head>
 
 <body>
     <div class="summary-box">
-        <h2>📝 Submitted Event Details</h2>
+        <h2>Submitted Event Details</h2>
 
-        <h3>📌 General Information</h3>
+        <h3>General Information</h3>
         {% for key, value in data.form_data.items() %}
         {% if key not in ['event_summary', 'event_objectives', 'event_feedback_bulletin', 'event_outcome',
         'seo_description'] %}
@@ -129,7 +134,7 @@
         {% endif %}
         {% endfor %}
 
-        <h3>📄 Generated Content</h3>
+        <h3>Generated Content</h3>
         {% for key in ['event_summary', 'event_objectives', 'event_feedback_bulletin', 'event_outcome',
         'seo_description'] %}
         {% if data.form_data.get(key) %}
@@ -140,7 +145,7 @@
         {% endif %}
         {% endfor %}
 
-        <h3>📁 Uploaded Files</h3>
+        <h3>Uploaded Files</h3>
         {% for file_key, files in data.file_fields.items() %}
         <div class="field">
             <label>{{ file_key.replace("_", " ").title() }}</label>
@@ -182,6 +187,9 @@
             </button>
         </a>
     </div>
+    <footer>
+        Crafted by Kristu Jayanti Developers' Group 
+    </footer>
 
 </body>
 
